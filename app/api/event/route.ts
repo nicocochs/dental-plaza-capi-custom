@@ -29,7 +29,10 @@ export async function POST(req: Request) {
     const email     = body.email     || body.customData?.email
     const phone     = body.phone     || body.customData?.phone
     const firstName = body.firstName || body.customData?.firstName
+    const lastName  = body.lastName  || body.customData?.lastName
     const eventName = body.eventName || body.customData?.eventName || 'Consulta_solicitada'
+    const value     = body.value     || body.customData?.value
+    const currency  = body.currency  || body.customData?.currency
     const testCode  = body.testCode  || body.customData?.testCode
 
     console.log('[capi-request]', { eventName, email: email ? 'present' : 'missing' })
@@ -38,6 +41,7 @@ export async function POST(req: Request) {
     if (email)     userData.em = sha256(email)
     if (phone)     userData.ph = sha256(normalizePhone(phone))
     if (firstName) userData.fn = sha256(firstName)
+    if (lastName)  userData.ln = sha256(lastName)
 
     const fbp = body.fbp || body.customData?.fbp
     const fbc = body.fbc || body.customData?.fbc
@@ -58,6 +62,7 @@ export async function POST(req: Request) {
           action_source: 'website',
           event_source_url: 'https://carillascopiapo.cl',
           user_data: userData,
+          ...(value && currency ? { value: parseFloat(value), currency } : {}),
         },
       ],
     }
