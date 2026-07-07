@@ -65,25 +65,14 @@ export async function POST(req: Request) {
       event_source_url: pageUrl,
       user_data: userData,
     }
-    if (eventId) customEvent.event_id = `${eventId}_cs`
+    if (eventId) customEvent.event_id = eventId
     if (value && currency) {
       customEvent.value = parseFloat(value)
       customEvent.currency = currency
     }
 
-    const data: Record<string, unknown>[] = []
-    if (eventName === 'consulta_solicitada') {
-      const leadEvent: Record<string, unknown> = {
-        event_name: 'Lead',
-        event_time: eventTime,
-        action_source: 'website',
-        event_source_url: pageUrl,
-        user_data: userData,
-      }
-      if (eventId) leadEvent.event_id = eventId
-      data.push(leadEvent)
-    }
-    data.push(customEvent)
+    // SOLO custom. NUNCA mandar Lead (categoría Health quema el píxel). events_received:1.
+    const data: Record<string, unknown>[] = [customEvent]
 
     const payload: Record<string, unknown> = {
       data,
